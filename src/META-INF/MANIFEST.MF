@@ -1,0 +1,15 @@
+Manifest-Version: 1.0
+Class-Path: spring-webmvc-portlet-4.3.7.RELEASE.jar spring-websocket-4
+ .3.7.RELEASE.jar spring-webmvc-4.3.7.RELEASE.jar spring-web-4.3.7.REL
+ EASE.jar servlet-api.jar commons-dbutils-1.6.jar mysql-connector-java
+ -5.1.41-bin.jar c3p0-0.9.5.2.jar mchange-commons-java-0.2.11.jar joda
+ -time-2.9.9.jar spring-aspects-4.3.7.RELEASE.jar spring-context-suppo
+ rt-4.3.7.RELEASE.jar spring-aop-4.3.7.RELEASE.jar spring-expression-4
+ .3.7.RELEASE.jar spring-instrument-4.3.7.RELEASE.jar spring-instrumen
+ t-tomcat-4.3.7.RELEASE.jar spring-beans-4.3.7.RELEASE.jar spring-jdbc
+ -4.3.7.RELEASE.jar spring-core-4.3.7.RELEASE.jar spring-jms-4.3.7.REL
+ EASE.jar spring-context-4.3.7.RELEASE.jar spring-oxm-4.3.7.RELEASE.ja
+ r spring-messaging-4.3.7.RELEASE.jar spring-tx-4.3.7.RELEASE.jar aopa
+ lliance-1.0.jar commons-logging-1.2.jar spring-orm-4.3.7.RELEASE.jar 
+ spring-test-4.3.7.RELEASE.jar
+
