@@ -1,37 +1,34 @@
 package controllers;
 
-import com.yet.dapper.DapperPage;
-import com.yet.dapper.MyConnection;
-import com.yet.dbhelper.DbHelper;
-import model.peopleT;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import java.io.Console;
+import javax.servlet.http.HttpSession;
 import java.sql.SQLException;
-import java.util.List;
-import java.util.Map;
 
 @Controller
 public class HomeController {
 
     @RequestMapping(value = "/")
-    public String Index() throws SQLException {
+    public String Index(HttpSession session, ModelMap map) throws SQLException {
 
-        MyConnection conn = DbHelper.GetConn();
-
-        String sql = "SELECT * FROM people WHERE Id=?";
-        Map mp = conn.QueryMap(sql,1);
-
-        System.out.print(mp.get("Name"));
-
-        conn.Close();
+        map.put("name", "李四"); //向jsp页面传值，前台使用request.getAttribute("name")来取值
+        session.setAttribute("name", "这是session"); //设置session
         return "/home/index";
     }
 
     @RequestMapping(value = "/home/hello")
-    public String Hello() {
+    public String Hello(HttpSession session) throws SQLException {
+        Object data = session.getAttribute("name"); //获取session
+        System.out.println(data);
+
         return "/home/hello";
+    }
+
+    @RequestMapping(value = "/home/say")
+    public String Say() throws Exception {
+        throw new Exception("错误");
     }
 
 }
