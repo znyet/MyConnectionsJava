@@ -1,6 +1,7 @@
 package com.yet.dapper;
 
 import com.yet.dapper.connections.MySqlConnection;
+import com.yet.dapper.connections.SqlserverConnection;
 import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.handlers.*;
 
@@ -17,6 +18,10 @@ public abstract class MyConnection {
 
     public static MyConnection CreateMySql(Connection _conn) {
         return new MySqlConnection(_conn);
+    }
+
+    public static MyConnection CreateSqlserver(Connection _conn) {
+        return new SqlserverConnection(_conn);
     }
 
     //查询单行单列数据
