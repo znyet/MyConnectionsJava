@@ -2,6 +2,7 @@ package com.yet.dbhelper;
 
 
 import com.zaxxer.hikari.HikariDataSource;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Connection;
@@ -25,9 +26,7 @@ public class MySqlPool {
 //        ds.setConnectionTimeout(30000); //30秒
 
         Properties pro = new Properties();
-        InputStream in = null;
-
-        in = MySqlPool.class.getClassLoader().getResourceAsStream("/config/mysql.properties");
+        InputStream in = MySqlPool.class.getClassLoader().getResourceAsStream("/config/mysql.properties");
         try {
             pro.load(in);
         } catch (IOException e) {
