@@ -18,7 +18,7 @@
     <!--ViewResolver 视图解析器-->
     <!--用于支持Servlet、JSP视图解析-->
     <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
-        <property name="prefix" value="WEB-INF//views/"></property>
+        <property name="prefix" value="/WEB-INF/views/"></property>
         <property name="suffix" value=".jsp"></property>
     </bean>
 

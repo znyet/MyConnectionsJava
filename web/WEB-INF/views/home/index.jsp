@@ -9,6 +9,7 @@
 <html>
 <head>
     <title>Title</title>
+    <link rel="stylesheet" href="content/css/common.css">
 </head>
 <body>
     <h1>这是首页</h1>
