@@ -2,6 +2,7 @@ package controllers;
 
 import com.yet.dapper.MyConnection;
 import com.yet.dbhelper.DbHelper;
+import model.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
