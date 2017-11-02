@@ -14,6 +14,7 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 
 public class MySqlConnection extends MyConnection {
 
@@ -35,7 +36,7 @@ public class MySqlConnection extends MyConnection {
                     String FieldsAtExtKey = DapperCommon.GetFieldsAtStr(sqls.ExceptKeyFieldList);
                     String FieldsEqExtKey = DapperCommon.GetFieldsEqStr(sqls.ExceptKeyFieldList, "`", "`");
 
-                    if (sqls.KeyName != "" && sqls.IsIdentity) //有主键并且是自增
+                    if (!Objects.equals(sqls.KeyName, "") && sqls.IsIdentity) //有主键并且是自增
                     {
                         sqls.InsertSql = MessageFormat.format("INSERT INTO `{0}`({1})VALUES({2})", sqls.TableName, FieldsExtKey, FieldsAtExtKey);
                         sqls.InsertIdentitySql = MessageFormat.format("INSERT INTO `{0}`({1})VALUES({2})", sqls.TableName, Fields, FieldsAt);
@@ -43,7 +44,7 @@ public class MySqlConnection extends MyConnection {
                         sqls.InsertSql = MessageFormat.format("INSERT INTO `{0}`({1})VALUES({2})", sqls.TableName, Fields, FieldsAt);
                     }
 
-                    if (sqls.KeyName != "") //含有主键
+                    if (!Objects.equals(sqls.KeyName, "")) //含有主键
                     {
                         sqls.DeleteByIdSql = MessageFormat.format("DELETE FROM `{0}` WHERE `{1}`=?", sqls.TableName, sqls.KeyName);
                         sqls.DeleteByIdsSql = MessageFormat.format("DELETE FROM `{0}` WHERE `{1}` IN", sqls.TableName, sqls.KeyName);
