@@ -8,6 +8,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.servlet.http.HttpSession;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Map;
 
@@ -26,6 +27,11 @@ public class HomeController {
     public String Hello(HttpSession session) throws SQLException {
         Object data = session.getAttribute("name"); //获取session
         System.out.println(data);
+
+        MyConnection conn = DbHelper.GetConn();
+        Map  mpp = conn.QueryMap("SELECT * FROM people");
+
+        conn.Close();
 
         return "/home/hello";
     }

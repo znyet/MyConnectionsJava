@@ -14,6 +14,7 @@ import java.util.List;
  */
 public class SqlserverConnection extends MyConnection {
 
+
     public SqlserverConnection(Connection conn) {
         super.conn = conn;
         super.runner = new QueryRunner();
@@ -21,16 +22,16 @@ public class SqlserverConnection extends MyConnection {
 
     @Override
     public BigInteger GetIdentity() throws SQLException {
-        return null;
+        return ExecuteScalar("SELECT @@IDENTITY");
     }
 
     @Override
-    public <T> int Insert(T model) throws SQLException {
+    public <T> int Insert(T model) throws Exception {
         return 0;
     }
 
     @Override
-    public <T> int InsertIdentity(T model) throws SQLException {
+    public <T> int InsertIdentity(T model) throws Exception {
         return 0;
     }
 
@@ -55,12 +56,12 @@ public class SqlserverConnection extends MyConnection {
     }
 
     @Override
-    public <T> int Update(T model) throws SQLException {
+    public <T> int Update(T model) throws Exception {
         return 0;
     }
 
     @Override
-    public <T> int Update(T model, String updateFields) throws SQLException {
+    public <T> int Update(T model, String updateFields) throws Exception {
         return 0;
     }
 

@@ -1,10 +1,10 @@
 package com.yet.dapper.connections;
 
-import com.esotericsoftware.reflectasm.MethodAccess;
 import com.yet.dapper.DapperPage;
 import com.yet.dapper.MyConnection;
 import com.yet.dapper.common.DapperCommon;
 import com.yet.dapper.common.DapperSqls;
+import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.dbutils.QueryRunner;
 
 import java.math.BigInteger;
@@ -19,6 +19,7 @@ public class MySqlConnection extends MyConnection {
 
     private static HashMap<String, DapperSqls> map = new HashMap<>();
     private static Object _locker = new Object();
+
     private static DapperSqls GetSqls(Class<?> t) {
         if (map.containsKey(t.getName())) {
             return map.get(t.getName());
@@ -71,35 +72,33 @@ public class MySqlConnection extends MyConnection {
     }
 
     @Override
-    public <T> int Insert(T model) throws SQLException {
+    public <T> int Insert(T model) throws Exception {
         DapperSqls sqls = GetSqls(model.getClass());
         Object[] par;
-        MethodAccess access = MethodAccess.get(model.getClass());
         if (sqls.IsIdentity) { //是自增
             par = new Object[sqls.ExceptKeyFieldList.size()];
             for (int i = 0; i < sqls.ExceptKeyFieldList.size(); i++) {
                 String name = sqls.ExceptKeyFieldList.get(i);
-                par[i] = access.invoke(model, access.getIndex("get" + name));
+                par[i] = BeanUtils.getProperty(model, name);
             }
         } else {
             par = new Object[sqls.AllFieldList.size()];
             for (int i = 0; i < sqls.AllFieldList.size(); i++) {
                 String name = sqls.AllFieldList.get(i);
-                par[i] = access.invoke(model, access.getIndex("get" + name));
+                par[i] = BeanUtils.getProperty(model, name);
             }
         }
         return Execute(sqls.InsertSql, par);
     }
 
     @Override
-    public <T> int InsertIdentity(T model) throws SQLException {
+    public <T> int InsertIdentity(T model) throws Exception {
         DapperSqls sqls = GetSqls(model.getClass());
         if (sqls.IsIdentity) {
             Object[] par = new Object[sqls.AllFieldList.size()];
-            MethodAccess access = MethodAccess.get(model.getClass());
             for (int i = 0; i < sqls.AllFieldList.size(); i++) {
                 String name = sqls.AllFieldList.get(i);
-                par[i] = access.invoke(model, access.getIndex("get" + name));
+                par[i] = BeanUtils.getProperty(model, name);
             }
             return Execute(sqls.InsertIdentitySql, par);
         }
@@ -134,50 +133,47 @@ public class MySqlConnection extends MyConnection {
     }
 
     @Override
-    public <T> int Update(T model) throws SQLException {
+    public <T> int Update(T model) throws Exception {
         DapperSqls sqls = GetSqls(model.getClass());
-        MethodAccess access = MethodAccess.get(model.getClass());
         List<Object> params = new ArrayList<>();
         StringBuilder sb = new StringBuilder();
         sb.append("UPDATE `").append(sqls.TableName).append("` SET ");
         for (int i = 0; i < sqls.ExceptKeyFieldList.size(); i++) {
             String name = sqls.ExceptKeyFieldList.get(i);
-            params.add(access.invoke(model, access.getIndex("get" + name)));
+            params.add(BeanUtils.getProperty(model, name));
             sb.append("`").append(name).append("`=?");
             if (i < sqls.ExceptKeyFieldList.size() - 1) {
                 sb.append(",");
             }
         }
         sb.append(" WHERE `").append(sqls.KeyName).append("`=?");
-        params.add(access.invoke(model, access.getIndex("get" + sqls.KeyName)));
+        params.add(BeanUtils.getProperty(model, sqls.KeyName));
         return Execute(sb.toString(), params.toArray());
     }
 
     @Override
-    public <T> int Update(T model, String updateFields) throws SQLException {
+    public <T> int Update(T model, String updateFields) throws Exception {
         DapperSqls sqls = GetSqls(model.getClass());
-        MethodAccess access = MethodAccess.get(model.getClass());
         List<Object> params = new ArrayList<>();
         String[] arr = updateFields.split(",");
         StringBuilder sb = new StringBuilder();
         sb.append("UPDATE `").append(sqls.TableName).append("` SET ");
         for (int i = 0; i < arr.length; i++) {
             String name = arr[i];
-            params.add(access.invoke(model, access.getIndex("get" + name)));
+            params.add(BeanUtils.getProperty(model, name));
             sb.append("`").append(name).append("`=?");
             if (i < arr.length - 1) {
                 sb.append(",");
             }
         }
         sb.append(" WHERE `").append(sqls.KeyName).append("`=?");
-        params.add(access.invoke(model, access.getIndex("get" + sqls.KeyName)));
+        params.add(BeanUtils.getProperty(model, sqls.KeyName));
         return Execute(sb.toString(), params.toArray());
     }
 
     @Override
     public int UpdateByWhere(Class<?> type, String updateFields, String where, Object... params) throws SQLException {
         DapperSqls sqls = GetSqls(type);
-        MethodAccess access = MethodAccess.get(type);
         String[] arr = updateFields.split(",");
         StringBuilder sb = new StringBuilder();
         sb.append("UPDATE `").append(sqls.TableName).append("` SET ");

@@ -115,10 +115,10 @@ public abstract class MyConnection {
     public abstract BigInteger GetIdentity() throws SQLException;
 
     //添加(使用反射)
-    public abstract <T> int Insert(T model) throws SQLException;
+    public abstract <T> int Insert(T model) throws Exception;
 
     //添加有自增的数据(使用反射)
-    public abstract <T> int InsertIdentity(T model) throws SQLException;
+    public abstract <T> int InsertIdentity(T model) throws Exception;
 
     //删除
     public abstract int DeleteById(Class<?> type, Object id) throws SQLException;
@@ -133,10 +133,10 @@ public abstract class MyConnection {
     public abstract int DeleteByWhere(Class<?> type, String where, Object... params) throws SQLException;
 
     //修改数据
-    public abstract <T> int Update(T model) throws SQLException;
+    public abstract <T> int Update(T model) throws Exception;
 
     //修改数据(可选择要修改的列)
-    public abstract <T> int Update(T model, String updateFields) throws SQLException;
+    public abstract <T> int Update(T model, String updateFields) throws Exception;
 
     //根据where条件修改数据
     public abstract int UpdateByWhere(Class<?> type, String updateFields, String where, Object... params) throws SQLException;
