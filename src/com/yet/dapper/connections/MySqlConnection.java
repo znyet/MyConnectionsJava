@@ -18,7 +18,7 @@ import java.util.List;
 public class MySqlConnection extends MyConnection {
 
     private static HashMap<String, DapperSqls> map = new HashMap<>();
-    private static Object _locker = new Object();
+    private static final Object _locker = new Object();
 
     private static DapperSqls GetSqls(Class<?> t) {
         if (map.containsKey(t.getName())) {
