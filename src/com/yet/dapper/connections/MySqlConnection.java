@@ -4,7 +4,7 @@ import com.yet.dapper.DapperPage;
 import com.yet.dapper.MyConnection;
 import com.yet.dapper.common.DapperCommon;
 import com.yet.dapper.common.DapperSqls;
-import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.dbutils.QueryRunner;
 
 import java.math.BigInteger;
@@ -75,33 +75,25 @@ public class MySqlConnection extends MyConnection {
     @Override
     public <T> int Insert(T model) throws Exception {
         DapperSqls sqls = GetSqls(model.getClass());
-        Object[] par;
+        List<Object> par = new ArrayList<>();
         if (sqls.IsIdentity) { //是自增
-            par = new Object[sqls.ExceptKeyFieldList.size()];
-            for (int i = 0; i < sqls.ExceptKeyFieldList.size(); i++) {
-                String name = sqls.ExceptKeyFieldList.get(i);
-                par[i] = BeanUtils.getProperty(model, name);
-            }
+            for (String item : sqls.ExceptKeyFieldList)
+                par.add(PropertyUtils.getProperty(model, item));
         } else {
-            par = new Object[sqls.AllFieldList.size()];
-            for (int i = 0; i < sqls.AllFieldList.size(); i++) {
-                String name = sqls.AllFieldList.get(i);
-                par[i] = BeanUtils.getProperty(model, name);
-            }
+            for (String item : sqls.AllFieldList)
+                par.add(PropertyUtils.getProperty(model, item));
         }
-        return Execute(sqls.InsertSql, par);
+        return Execute(sqls.InsertSql, par.toArray());
     }
 
     @Override
     public <T> int InsertIdentity(T model) throws Exception {
         DapperSqls sqls = GetSqls(model.getClass());
         if (sqls.IsIdentity) {
-            Object[] par = new Object[sqls.AllFieldList.size()];
-            for (int i = 0; i < sqls.AllFieldList.size(); i++) {
-                String name = sqls.AllFieldList.get(i);
-                par[i] = BeanUtils.getProperty(model, name);
-            }
-            return Execute(sqls.InsertIdentitySql, par);
+            List<Object> par = new ArrayList<>();
+            for (String item : sqls.AllFieldList)
+                par.add(PropertyUtils.getProperty(model, item));
+            return Execute(sqls.InsertIdentitySql, par.toArray());
         }
         return 0;
     }
@@ -141,14 +133,14 @@ public class MySqlConnection extends MyConnection {
         sb.append("UPDATE `").append(sqls.TableName).append("` SET ");
         for (int i = 0; i < sqls.ExceptKeyFieldList.size(); i++) {
             String name = sqls.ExceptKeyFieldList.get(i);
-            params.add(BeanUtils.getProperty(model, name));
+            params.add(PropertyUtils.getProperty(model, name));
             sb.append("`").append(name).append("`=?");
             if (i < sqls.ExceptKeyFieldList.size() - 1) {
                 sb.append(",");
             }
         }
         sb.append(" WHERE `").append(sqls.KeyName).append("`=?");
-        params.add(BeanUtils.getProperty(model, sqls.KeyName));
+        params.add(PropertyUtils.getProperty(model, sqls.KeyName));
         return Execute(sb.toString(), params.toArray());
     }
 
@@ -161,14 +153,14 @@ public class MySqlConnection extends MyConnection {
         sb.append("UPDATE `").append(sqls.TableName).append("` SET ");
         for (int i = 0; i < arr.length; i++) {
             String name = arr[i];
-            params.add(BeanUtils.getProperty(model, name));
+            params.add(PropertyUtils.getProperty(model, name));
             sb.append("`").append(name).append("`=?");
             if (i < arr.length - 1) {
                 sb.append(",");
             }
         }
         sb.append(" WHERE `").append(sqls.KeyName).append("`=?");
-        params.add(BeanUtils.getProperty(model, sqls.KeyName));
+        params.add(PropertyUtils.getProperty(model, sqls.KeyName));
         return Execute(sb.toString(), params.toArray());
     }
 
