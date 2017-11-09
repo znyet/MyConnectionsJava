@@ -1,12 +1,10 @@
 package com.yet.dapper.common;
 
-import com.esotericsoftware.reflectasm.MethodAccess;
 import com.yet.dapper.Igore;
 import com.yet.dapper.TableAttr;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 /**
