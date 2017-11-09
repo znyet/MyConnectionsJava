@@ -5,9 +5,7 @@ import com.yet.dapper.MyConnection;
 import com.yet.dapper.common.DapperCommon;
 import com.yet.dapper.common.DapperSqls;
 import org.apache.commons.beanutils.PropertyUtils;
-import org.apache.commons.dbutils.QueryRunner;
 
-import java.math.BigInteger;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.text.MessageFormat;
@@ -62,18 +60,23 @@ public class MySqlConnection extends MyConnection {
         return map.get(t.getName());
     }
 
-    public MySqlConnection(Connection conn) {
-        super.conn = conn;
-        super.runner = new QueryRunner();
+    public MySqlConnection(Connection _conn, boolean _autoCommit) {
+        super.conn = _conn;
+        if(!_autoCommit)
+            try {
+                conn.setAutoCommit(_autoCommit);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
     }
 
     @Override
-    public BigInteger GetIdentity() throws SQLException {
-        return ExecuteScalar("SELECT @@IDENTITY");
+    public <T> T getIdentity() throws SQLException {
+        return executeScalar("SELECT @@IDENTITY");
     }
 
     @Override
-    public <T> int Insert(T model) throws Exception {
+    public <T> int insert(T model) throws Exception {
         DapperSqls sqls = GetSqls(model.getClass());
         List<Object> par = new ArrayList<>();
         if (sqls.IsIdentity) { //是自增
@@ -83,50 +86,50 @@ public class MySqlConnection extends MyConnection {
             for (String item : sqls.AllFieldList)
                 par.add(PropertyUtils.getProperty(model, item));
         }
-        return Execute(sqls.InsertSql, par.toArray());
+        return execute(sqls.InsertSql, par.toArray());
     }
 
     @Override
-    public <T> int InsertIdentity(T model) throws Exception {
+    public <T> int insertIdentity(T model) throws Exception {
         DapperSqls sqls = GetSqls(model.getClass());
         if (sqls.IsIdentity) {
             List<Object> par = new ArrayList<>();
             for (String item : sqls.AllFieldList)
                 par.add(PropertyUtils.getProperty(model, item));
-            return Execute(sqls.InsertIdentitySql, par.toArray());
+            return execute(sqls.InsertIdentitySql, par.toArray());
         }
         return 0;
     }
 
     @Override
-    public int DeleteById(Class<?> type, Object id) throws SQLException {
-        return Execute(GetSqls(type).DeleteByIdSql, id);
+    public int deleteById(Class<?> type, Object id) throws SQLException {
+        return execute(GetSqls(type).DeleteByIdSql, id);
     }
 
     @Override
-    public int DeleteByIds(Class<?> type, Object... ids) throws SQLException {
+    public int deleteByIds(Class<?> type, Object... ids) throws SQLException {
         if (ids.length != 0) {
             DapperSqls sqls = GetSqls(type);
             String sql = sqls.DeleteByIdsSql + "(" + DapperCommon.GetFieldsAtStr(ids) + ")";
-            return Execute(sql, ids);
+            return execute(sql, ids);
         }
         return 0;
     }
 
     @Override
-    public int DeleteByWhere(Class<?> type, String where, Object... params) throws SQLException {
+    public int deleteByWhere(Class<?> type, String where, Object... params) throws SQLException {
         DapperSqls sqls = GetSqls(type);
         String sql = "DELETE FROM `" + sqls.TableName + "` " + where;
-        return Execute(sql, params);
+        return execute(sql, params);
     }
 
     @Override
-    public int DeleteAll(Class<?> type) throws SQLException {
-        return Execute(GetSqls(type).DeleteAllSql);
+    public int deleteAll(Class<?> type) throws SQLException {
+        return execute(GetSqls(type).DeleteAllSql);
     }
 
     @Override
-    public <T> int Update(T model) throws Exception {
+    public <T> int update(T model) throws Exception {
         DapperSqls sqls = GetSqls(model.getClass());
         List<Object> params = new ArrayList<>();
         StringBuilder sb = new StringBuilder();
@@ -141,11 +144,11 @@ public class MySqlConnection extends MyConnection {
         }
         sb.append(" WHERE `").append(sqls.KeyName).append("`=?");
         params.add(PropertyUtils.getProperty(model, sqls.KeyName));
-        return Execute(sb.toString(), params.toArray());
+        return execute(sb.toString(), params.toArray());
     }
 
     @Override
-    public <T> int Update(T model, String updateFields) throws Exception {
+    public <T> int update(T model, String updateFields) throws Exception {
         DapperSqls sqls = GetSqls(model.getClass());
         List<Object> params = new ArrayList<>();
         String[] arr = updateFields.split(",");
@@ -161,11 +164,11 @@ public class MySqlConnection extends MyConnection {
         }
         sb.append(" WHERE `").append(sqls.KeyName).append("`=?");
         params.add(PropertyUtils.getProperty(model, sqls.KeyName));
-        return Execute(sb.toString(), params.toArray());
+        return execute(sb.toString(), params.toArray());
     }
 
     @Override
-    public int UpdateByWhere(Class<?> type, String updateFields, String where, Object... params) throws SQLException {
+    public int updateByWhere(Class<?> type, String updateFields, String where, Object... params) throws SQLException {
         DapperSqls sqls = GetSqls(type);
         String[] arr = updateFields.split(",");
         StringBuilder sb = new StringBuilder();
@@ -179,49 +182,49 @@ public class MySqlConnection extends MyConnection {
                 sb.append(" ").append(where);
             }
         }
-        return Execute(sb.toString(), params);
+        return execute(sb.toString(), params);
     }
 
     @Override
-    public <T> List<T> GetAll(Class<T> type) throws SQLException {
-        return Query(GetSqls(type).GetAllSql, type);
+    public <T> List<T> getAll(Class<T> type) throws SQLException {
+        return query(GetSqls(type).GetAllSql, type);
     }
 
     @Override
-    public <T> List<T> GetAll(Class<T> type, String returnFields) throws SQLException {
+    public <T> List<T> getAll(Class<T> type, String returnFields) throws SQLException {
         DapperSqls sqls = GetSqls(type);
         String sql = MessageFormat.format("SELECT {0} FROM `{1}`", returnFields, sqls.TableName);
-        return Query(sql, type);
+        return query(sql, type);
     }
 
     @Override
-    public <T> T GetById(Class<T> type, Object id) throws SQLException {
-        return QueryFirstOrDefault(GetSqls(type).GetByIdSql, type, id);
+    public <T> T getById(Class<T> type, Object id) throws SQLException {
+        return queryFirstOrDefault(GetSqls(type).GetByIdSql, type, id);
     }
 
     @Override
-    public <T> T GetById(Class<T> type, Object id, String returnFields) throws SQLException {
+    public <T> T getById(Class<T> type, Object id, String returnFields) throws SQLException {
         DapperSqls sqls = GetSqls(type);
         String sql = MessageFormat.format("SELECT {0} FROM `{1}` WHERE `{2}`=?", returnFields, sqls.TableName, sqls.KeyName);
-        return QueryFirstOrDefault(sql, type, id);
+        return queryFirstOrDefault(sql, type, id);
     }
 
     @Override
-    public <T> List<T> GetByIds(Class<T> type, String returnFields, Object... ids) throws SQLException {
+    public <T> List<T> getByIds(Class<T> type, String returnFields, Object... ids) throws SQLException {
         if (ids.length != 0) {
             DapperSqls sqls = GetSqls(type);
             if (returnFields.equals("*") || returnFields.equals("")) {
                 String sql = sqls.GetByIdsSql + "(" + DapperCommon.GetFieldsAtStr(ids) + ")";
-                return Query(sql, type, ids);
+                return query(sql, type, ids);
             }
             String sql = MessageFormat.format("SELECT {0} FROM `{1}` WHERE `{2}` IN({3})", returnFields, sqls.TableName, sqls.KeyName, DapperCommon.GetFieldsAtStr(ids));
-            return Query(sql, type, ids);
+            return query(sql, type, ids);
         }
         return new ArrayList<>();
     }
 
     @Override
-    public <T> List<T> GetByWhere(Class<T> type, String returnFields, String where, Object... params) throws SQLException {
+    public <T> List<T> getByWhere(Class<T> type, String returnFields, String where, Object... params) throws SQLException {
         DapperSqls sqls = GetSqls(type);
         String sql;
         if (where == null)
@@ -230,11 +233,11 @@ public class MySqlConnection extends MyConnection {
             sql = MessageFormat.format("SELECT {0} FROM `{1}` {2}", sqls.AllFields, sqls.TableName, where);
         else
             sql = MessageFormat.format("SELECT {0} FROM `{1}` {2}", returnFields, sqls.TableName, where);
-        return Query(sql, type, params);
+        return query(sql, type, params);
     }
 
     @Override
-    public <T> T GetByWhereFirst(Class<T> type, String returnFields, String where, Object... params) throws SQLException {
+    public <T> T getByWhereFirst(Class<T> type, String returnFields, String where, Object... params) throws SQLException {
         DapperSqls sqls = GetSqls(type);
         String sql;
         if (where == null)
@@ -243,29 +246,29 @@ public class MySqlConnection extends MyConnection {
             sql = MessageFormat.format("SELECT {0} FROM `{1}` {2}", sqls.AllFields, sqls.TableName, where);
         else
             sql = MessageFormat.format("SELECT {0} FROM `{1}` {2}", returnFields, sqls.TableName, where);
-        return QueryFirstOrDefault(sql, type, params);
+        return queryFirstOrDefault(sql, type, params);
     }
 
     @Override
-    public <T> int GetTotal(Class<T> type, String where, Object... params) throws SQLException {
+    public <T> int getTotal(Class<T> type, String where, Object... params) throws SQLException {
         if (where == null)
             where = "";
         String sql = MessageFormat.format("SELECT COUNT(1) FROM `{0}` {1}", GetSqls(type).TableName, where);
-        long total = ExecuteScalar(sql, params);
+        long total = executeScalar(sql, params);
         return (int) total;
     }
 
     @Override
-    public <T> List<T> GetByIdsWhichField(Class<T> type, String whichField, String returnFields, Object... ids) throws SQLException {
+    public <T> List<T> getByIdsWhichField(Class<T> type, String whichField, String returnFields, Object... ids) throws SQLException {
         if (ids.length != 0) {
             String sql = MessageFormat.format("SELECT {0} FROM `{1}` WHERE {2} IN({3})", returnFields, GetSqls(type).TableName, whichField, DapperCommon.GetFieldsAtStr(ids));
-            return Query(sql, type, ids);
+            return query(sql, type, ids);
         }
         return new ArrayList<>();
     }
 
     @Override
-    public <T> List<T> GetBySkipTake(Class<T> type, int skip, int take, String returnFields, String orderBy, String where, Object... params) throws SQLException {
+    public <T> List<T> getBySkipTake(Class<T> type, int skip, int take, String returnFields, String orderBy, String where, Object... params) throws SQLException {
         DapperSqls sqls = GetSqls(type);
         if (where == null)
             where = "";
@@ -277,24 +280,24 @@ public class MySqlConnection extends MyConnection {
             }
         }
         String sql = MessageFormat.format("SELECT {0} FROM `{1}` {2} {3} LIMIT {4},{5}", returnFields, sqls.TableName, where, orderBy, skip, take);
-        return Query(sql, type, params);
+        return query(sql, type, params);
     }
 
     @Override
-    public <T> List<T> GetByPageIndex(Class<T> type, int pageIndex, int pageSize, String returnFields, String orderBy, String where, Object... params) throws SQLException {
+    public <T> List<T> getByPageIndex(Class<T> type, int pageIndex, int pageSize, String returnFields, String orderBy, String where, Object... params) throws SQLException {
         int skip = 0;
         if (pageIndex > 0) {
             skip = (pageIndex - 1) * pageSize;
         }
-        return GetBySkipTake(type, skip, pageSize, returnFields, orderBy, where, params);
+        return getBySkipTake(type, skip, pageSize, returnFields, orderBy, where, params);
     }
 
     @Override
-    public <T> DapperPage<T> GetByPage(Class<T> type, int pageIndex, int pageSize, String returnFields, String orderBy, String where, Object... params) throws SQLException {
+    public <T> DapperPage<T> getByPage(Class<T> type, int pageIndex, int pageSize, String returnFields, String orderBy, String where, Object... params) throws SQLException {
 
         DapperPage<T> page = new DapperPage<>();
-        page.total = GetTotal(type, where, params);
-        page.data = GetByPageIndex(type, pageIndex, pageSize, returnFields, orderBy, where, params);
+        page.total = getTotal(type, where, params);
+        page.data = getByPageIndex(type, pageIndex, pageSize, returnFields, orderBy, where, params);
         return page;
     }
 

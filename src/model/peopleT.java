@@ -13,7 +13,7 @@ import java.util.Date;
 /// <summary>
 ///
 /// </summary>
-@TableAttr(TableName = "people", KeyName = "Id", IsIdentity = true)
+@TableAttr(TableName = "people", KeyName = "id", IsIdentity = true)
 public class peopleT {
     /// <summary>
     /// 字段描述:
@@ -21,14 +21,14 @@ public class peopleT {
     /// 数据长度:0
     /// 允许空值:False
     /// </summary>
-    private int Id;
+    private int id;
 
     public int getId() {
-        return Id;
+        return id;
     }
 
     public void setId(int val) {
-        Id = val;
+        id = val;
     }
 
 
@@ -38,14 +38,14 @@ public class peopleT {
     /// 数据长度:765
     /// 允许空值:True
     /// </summary>
-    private String Name;
+    private String name;
 
     public String getName() {
-        return Name;
+        return name;
     }
 
     public void setName(String val) {
-        Name = val;
+        name = val;
     }
 
 
@@ -55,14 +55,14 @@ public class peopleT {
     /// 数据长度:0
     /// 允许空值:True
     /// </summary>
-    private int Score;
+    private int score;
 
     public int getScore() {
-        return Score;
+        return score;
     }
 
     public void setScore(int val) {
-        Score = val;
+        score = val;
     }
 
 
@@ -72,14 +72,14 @@ public class peopleT {
     /// 数据长度:0
     /// 允许空值:True
     /// </summary>
-    private Date Time;
+    private Date time;
 
     public Date getTime() {
-        return Time;
+        return time;
     }
 
     public void setTime(Date val) {
-        Time = val;
+        time = val;
     }
 
 
