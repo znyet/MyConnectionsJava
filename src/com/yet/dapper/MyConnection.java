@@ -12,8 +12,19 @@ import java.util.Map;
 
 public abstract class MyConnection implements AutoCloseable {
 
-    protected Connection conn;
-    protected QueryRunner runner = new QueryRunner();
+    private Connection conn;
+    private QueryRunner runner;
+
+    public MyConnection(Connection _conn, boolean _autoCommit) {
+        conn = _conn;
+        runner = new QueryRunner();
+        if (!_autoCommit)
+            try {
+                conn.setAutoCommit(_autoCommit);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+    }
 
     public static MyConnection createMySql(Connection _conn, boolean _autoCommit) {
         return new MySqlConnection(_conn, _autoCommit);

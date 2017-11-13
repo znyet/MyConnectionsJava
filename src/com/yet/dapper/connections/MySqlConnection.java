@@ -61,13 +61,7 @@ public class MySqlConnection extends MyConnection {
     }
 
     public MySqlConnection(Connection _conn, boolean _autoCommit) {
-        super.conn = _conn;
-        if(!_autoCommit)
-            try {
-                conn.setAutoCommit(_autoCommit);
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
+        super(_conn, _autoCommit);
     }
 
     @Override

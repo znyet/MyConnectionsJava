@@ -19,8 +19,8 @@ public class HomeController {
         map.put("name", "李四"); //向jsp页面传值，前台使用request.getAttribute("name")来取值
         session.setAttribute("name", "这是session"); //设置session
 
-        try (MyConnection conn = DbHelper.open()){
-            peopleT model = conn.getById(peopleT.class,1);
+        try (MyConnection conn = DbHelper.open()) {
+            peopleT model = conn.getByWhereFirst(peopleT.class, "*", "WHERE Id=?", 1);
             System.out.println(model.getName());
         }
 
